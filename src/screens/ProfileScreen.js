@@ -4,18 +4,18 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
   Alert 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const ProfileScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const [user] = useState({
     name: 'John Doe',
     phone: '+91 9876543210',
@@ -336,3 +336,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default ProfileScreen;
+

@@ -4,17 +4,17 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
   Alert 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../design-system';
 import Card from '../../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const SettingsScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const settingsSections = [
@@ -365,3 +365,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default SettingsScreen;
+

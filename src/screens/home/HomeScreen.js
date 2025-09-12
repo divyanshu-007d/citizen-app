@@ -4,12 +4,12 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   FlatList, 
   RefreshControl,
   TouchableOpacity,
   Alert 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../design-system';
 import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
@@ -444,3 +444,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default HomeScreen;
+

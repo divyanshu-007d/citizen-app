@@ -4,14 +4,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ThemeProvider } from './src/design-system';
+import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 
 // Import root navigator
 import RootNavigator from './src/navigation';
 
-export default function App() {
-  // For now, we'll assume the user is not authenticated
-  // Later this can be managed through authentication state
-  const isAuthenticated = false;
+// App content component that uses auth context
+const AppContent = () => {
+  const { isAuthenticated } = useAuth();
 
   return (
     <SafeAreaProvider>
@@ -22,5 +22,13 @@ export default function App() {
         </NavigationContainer>
       </ThemeProvider>
     </SafeAreaProvider>
+  );
+};
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

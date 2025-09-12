@@ -4,17 +4,17 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../design-system';
 import Card from '../../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const LanguageSettings = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const [selectedLanguage, setSelectedLanguage] = useState('en');
@@ -428,3 +428,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default LanguageSettings;
+

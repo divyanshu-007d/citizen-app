@@ -4,12 +4,12 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView,
   TouchableOpacity,
   Alert,
   Image 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -26,7 +26,7 @@ const categories = [
 ];
 
 const ReportScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -406,3 +406,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default ReportScreen;
+

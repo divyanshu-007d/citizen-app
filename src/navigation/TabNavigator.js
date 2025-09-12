@@ -20,7 +20,7 @@ import LeaderboardScreen from '../screens/LeaderboardScreen';
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   return (
     <Tab.Navigator

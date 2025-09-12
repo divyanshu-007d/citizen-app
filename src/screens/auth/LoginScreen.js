@@ -1,7 +1,9 @@
 // src/screens/auth/LoginScreen.js
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../../design-system';
+import { useAuth } from '../../contexts/AuthContext';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
 import Card from '../../components/common/Card';
@@ -9,6 +11,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 
 const LoginScreen = ({ navigation }) => {
   const { theme } = useTheme();
+  const { login } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -18,23 +21,25 @@ const LoginScreen = ({ navigation }) => {
     // Simulate API call and directly login
     setTimeout(() => {
       setLoading(false);
-      // Navigate to main app (assuming you have a main navigator)
-      // For now, we'll show an alert that login was successful
-      Alert.alert('Login Successful', 'Welcome to Citizen App!', [
-        {
-          text: 'OK',
-          onPress: () => {
-            // TODO: Navigate to main app when main navigation is ready
-            console.log('User logged in successfully');
-          }
-        }
-      ]);
+      // Login user with phone number if provided
+      login({ 
+        phoneNumber: phoneNumber || null,
+        loginMethod: 'phone',
+        timestamp: new Date().toISOString()
+      });
     }, 1500);
   };
 
   const handleRegister = () => {
     // Direct login instead of register
-    handleLogin();
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      login({
+        loginMethod: 'registration',
+        timestamp: new Date().toISOString()
+      });
+    }, 1000);
   };
 
   const handleSocialLogin = (provider) => {
@@ -42,27 +47,21 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      Alert.alert('Login Successful', `Welcome via ${provider}!`, [
-        {
-          text: 'OK',
-          onPress: () => {
-            console.log(`User logged in via ${provider}`);
-          }
-        }
-      ]);
+      login({
+        loginMethod: provider.toLowerCase(),
+        provider: provider,
+        timestamp: new Date().toISOString()
+      });
     }, 1000);
   };
 
   const handleGuestLogin = () => {
     // Direct guest login
-    Alert.alert('Guest Login', 'Welcome as Guest!', [
-      {
-        text: 'OK',
-        onPress: () => {
-          console.log('User logged in as guest');
-        }
-      }
-    ]);
+    login({
+      loginMethod: 'guest',
+      isGuest: true,
+      timestamp: new Date().toISOString()
+    });
   };
 
   const styles = createStyles(theme);

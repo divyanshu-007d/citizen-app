@@ -45,7 +45,7 @@ const CommunityStack = createStackNavigator();
 const ProfileStack = createStackNavigator();
 
 export const HomeStackNavigator = () => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   return (
     <HomeStack.Navigator
@@ -108,7 +108,7 @@ export const HomeStackNavigator = () => {
 };
 
 export const ComplaintsStackNavigator = () => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   return (
     <ComplaintsStack.Navigator
@@ -151,7 +151,7 @@ export const ComplaintsStackNavigator = () => {
 };
 
 export const CommunityStackNavigator = () => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   return (
     <CommunityStack.Navigator
@@ -189,7 +189,7 @@ export const CommunityStackNavigator = () => {
 };
 
 export const ProfileStackNavigator = () => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   return (
     <ProfileStack.Navigator

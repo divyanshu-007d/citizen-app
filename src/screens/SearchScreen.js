@@ -4,19 +4,19 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
   TextInput,
   FlatList,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const SearchScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -774,3 +774,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default SearchScreen;
+

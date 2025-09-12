@@ -4,11 +4,11 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   TouchableOpacity,
   Alert,
   Dimensions 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
@@ -24,7 +24,7 @@ const mockMapData = [
 ];
 
 const MapScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const [complaints, setComplaints] = useState(mockMapData);
   const [selectedComplaint, setSelectedComplaint] = useState(null);
 
@@ -269,3 +269,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default MapScreen;
+

@@ -4,11 +4,11 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   FlatList, 
   TouchableOpacity,
   Image 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -73,7 +73,7 @@ const mockLeaderboardData = [
 ];
 
 const LeaderboardScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const [selectedTab, setSelectedTab] = useState('City');
   const [leaderboardData] = useState(mockLeaderboardData);
 
@@ -453,3 +453,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default LeaderboardScreen;
+

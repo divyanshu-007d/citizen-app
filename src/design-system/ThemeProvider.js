@@ -143,7 +143,7 @@ export const useThemedStyles = (styleFunction) => {
  */
 export const withTheme = (Component) => {
   return function ThemedComponent(props) {
-    const theme = useTheme();
+    const { theme } = useTheme();
     return <Component {...props} theme={theme} />;
   };
 };

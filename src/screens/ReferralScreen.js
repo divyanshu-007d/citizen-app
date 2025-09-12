@@ -4,20 +4,20 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView, 
   TouchableOpacity,
   Share,
   Alert,
   Clipboard
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
 import { FontAwesome5 } from '@expo/vector-icons';
 
 const ReferralScreen = ({ navigation }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const styles = createStyles(theme);
 
   const [referralCode] = useState('CIVIC2024ABC');
@@ -834,3 +834,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default ReferralScreen;
+

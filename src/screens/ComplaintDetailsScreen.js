@@ -4,7 +4,6 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  SafeAreaView, 
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -13,6 +12,7 @@ import {
   FlatList,
   TextInput
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '../design-system';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
@@ -83,7 +83,7 @@ const mockComplaintData = {
 };
 
 const ComplaintDetailsScreen = ({ navigation, route }) => {
-  const theme = useTheme();
+  const { theme } = useTheme();
   const { complaintId } = route.params || { complaintId: '1' };
   
   const [complaint] = useState(mockComplaintData);
@@ -628,3 +628,4 @@ const createStyles = (theme) => StyleSheet.create({
 });
 
 export default ComplaintDetailsScreen;
+
