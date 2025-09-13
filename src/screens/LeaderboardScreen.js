@@ -6,9 +6,12 @@ import {
   StyleSheet, 
   FlatList, 
   TouchableOpacity,
-  Image 
+  Image,
+  ScrollView 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../design-system';
 import Card from '../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -104,143 +107,193 @@ const LeaderboardScreen = ({ navigation }) => {
   const styles = createStyles(theme);
 
   const renderLeaderboardItem = ({ item, index }) => (
-    <Card style={[styles.itemCard, index < 3 && styles.topThreeCard]}>
-      <View style={styles.itemContent}>
-        <View style={styles.rankSection}>
-          <View style={[styles.rankBadge, index < 3 && styles.topRankBadge]}>
-            <Text style={[styles.rankText, index < 3 && styles.topRankText]}>
-              {index + 1}
-            </Text>
-          </View>
-          {index < 3 && (
-            <FontAwesome5 
-              name={index === 0 ? 'trophy' : index === 1 ? 'medal' : 'award'} 
-              size={16} 
-              color={index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'}
-              style={styles.trophyIcon}
-            />
-          )}
-        </View>
+    <TouchableOpacity style={styles.itemCardContainer}>
+      <BlurView intensity={60} tint="light" style={styles.itemCardBlur}>
+        <View style={[styles.itemCard, index < 3 && styles.topThreeCard]}>
+          <View style={styles.itemContent}>
+            <View style={styles.rankSection}>
+              <BlurView intensity={30} tint="light" style={[styles.rankBadge, index < 3 && styles.topRankBadge]}>
+                <Text style={[styles.rankText, index < 3 && styles.topRankText]}>
+                  {index + 1}
+                </Text>
+              </BlurView>
+              {index < 3 && (
+                <FontAwesome5 
+                  name={index === 0 ? 'trophy' : index === 1 ? 'medal' : 'award'} 
+                  size={16} 
+                  color={index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : '#CD7F32'}
+                  style={styles.trophyIcon}
+                />
+              )}
+            </View>
 
-        <View style={styles.avatarSection}>
-          <View style={styles.avatar}>
-            <FontAwesome5 name="user" size={24} color={theme.colors.neutral60} />
+            <View style={styles.avatarSection}>
+              <BlurView intensity={25} tint="light" style={styles.avatar}>
+                <FontAwesome5 name="user" size={20} color={theme.colors.primary} />
+              </BlurView>
+            </View>
+
+            <View style={styles.userInfo}>
+              <Text style={styles.userName}>{item.name}</Text>
+              <View style={styles.badgeContainer}>
+                <BlurView intensity={20} tint="light" style={styles.badgeBackground}>
+                  <FontAwesome5 
+                    name={getBadgeIcon(item.badge)} 
+                    size={12} 
+                    color={getBadgeColor(item.badge)} 
+                  />
+                  <Text style={[styles.badgeText, { color: getBadgeColor(item.badge) }]}>
+                    {item.badge}
+                  </Text>
+                </BlurView>
+              </View>
+            </View>
+
+            <View style={styles.statsSection}>
+              <View style={styles.pointsContainer}>
+                <Text style={styles.pointsText}>{item.points}</Text>
+                <Text style={styles.pointsLabel}>points</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Expanded Stats */}
+          <View style={styles.expandedStats}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{item.complaints}</Text>
+              <Text style={styles.statLabel}>Reports</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{item.resolved}</Text>
+              <Text style={styles.statLabel}>Resolved</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{item.upvotes}</Text>
+              <Text style={styles.statLabel}>Upvotes</Text>
+            </View>
           </View>
         </View>
-
-        <View style={styles.userInfo}>
-          <Text style={styles.userName}>{item.name}</Text>
-          <View style={styles.badgeContainer}>
-            <FontAwesome5 
-              name={getBadgeIcon(item.badge)} 
-              size={14} 
-              color={getBadgeColor(item.badge)} 
-            />
-            <Text style={[styles.badgeText, { color: getBadgeColor(item.badge) }]}>
-              {item.badge}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.statsSection}>
-          <View style={styles.pointsContainer}>
-            <Text style={styles.pointsText}>{item.points}</Text>
-            <Text style={styles.pointsLabel}>points</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Expanded Stats */}
-      <View style={styles.expandedStats}>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{item.complaints}</Text>
-          <Text style={styles.statLabel}>Reports</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{item.resolved}</Text>
-          <Text style={styles.statLabel}>Resolved</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statNumber}>{item.upvotes}</Text>
-          <Text style={styles.statLabel}>Upvotes</Text>
-        </View>
-      </View>
-    </Card>
+      </BlurView>
+    </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Leaderboard</Text>
-        <TouchableOpacity>
-          <FontAwesome5 name="info-circle" size={24} color={theme.colors.primary40} />
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[
+          theme.colors.primary + '08',
+          theme.colors.secondary + '05',
+          theme.colors.background
+        ]}
+        locations={[0, 0.5, 1]}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Glassmorphism Header */}
+          <BlurView intensity={80} tint="light" style={styles.headerBlur}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Leaderboard</Text>
+              <TouchableOpacity>
+                <FontAwesome5 name="info-circle" size={24} color={theme.colors.primary} />
+              </TouchableOpacity>
+            </View>
+          </BlurView>
 
-      {/* Tab Navigation */}
-      <View style={styles.tabContainer}>
-        {tabs.map((tab) => (
-          <TouchableOpacity
-            key={tab}
-            style={[
-              styles.tab,
-              selectedTab === tab && styles.activeTab
-            ]}
-            onPress={() => setSelectedTab(tab)}
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
           >
-            <Text style={[
-              styles.tabText,
-              selectedTab === tab && styles.activeTabText
-            ]}>
-              {tab}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+            {/* Tab Navigation with Glassmorphism */}
+            <View style={styles.tabContainer}>
+              {tabs.map((tab) => (
+                <TouchableOpacity
+                  key={tab}
+                  style={[
+                    styles.filterTab,
+                    selectedTab === tab && styles.activeFilterTab
+                  ]}
+                  onPress={() => setSelectedTab(tab)}
+                >
+                  <BlurView 
+                    intensity={selectedTab === tab ? 60 : 40} 
+                    tint="light" 
+                    style={styles.filterTabBlur}
+                  >
+                    <Text style={[
+                      styles.tabText,
+                      selectedTab === tab && styles.activeTabText
+                    ]}>
+                      {tab}
+                    </Text>
+                  </BlurView>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-      {/* Your Rank Card */}
-      <Card style={styles.yourRankCard}>
-        <View style={styles.yourRankHeader}>
-          <FontAwesome5 name="user-circle" size={24} color={theme.colors.primary40} />
-          <Text style={styles.yourRankTitle}>Your Rank</Text>
-        </View>
-        <View style={styles.yourRankStats}>
-          <View style={styles.yourRankItem}>
-            <Text style={styles.yourRankNumber}>8th</Text>
-            <Text style={styles.yourRankLabel}>Position</Text>
-          </View>
-          <View style={styles.yourRankItem}>
-            <Text style={styles.yourRankNumber}>950</Text>
-            <Text style={styles.yourRankLabel}>Points</Text>
-          </View>
-          <View style={styles.yourRankItem}>
-            <Text style={styles.yourRankNumber}>Active Citizen</Text>
-            <Text style={styles.yourRankLabel}>Badge</Text>
-          </View>
-        </View>
-      </Card>
+            {/* Your Rank Card with Glassmorphism */}
+            <BlurView intensity={80} tint="light" style={styles.yourRankBlurCard}>
+              <View style={styles.yourRankCardOverlay}>
+                <View style={styles.yourRankHeader}>
+                  <FontAwesome5 name="user-circle" size={24} color={theme.colors.primary} />
+                  <Text style={styles.yourRankTitle}>Your Rank</Text>
+                </View>
+                <View style={styles.yourRankStats}>
+                  <View style={styles.yourRankItem}>
+                    <Text style={styles.yourRankNumber}>8th</Text>
+                    <Text style={styles.yourRankLabel}>Position</Text>
+                  </View>
+                  <View style={styles.statDivider} />
+                  <View style={styles.yourRankItem}>
+                    <Text style={styles.yourRankNumber}>950</Text>
+                    <Text style={styles.yourRankLabel}>Points</Text>
+                  </View>
+                  <View style={styles.statDivider} />
+                  <View style={styles.yourRankItem}>
+                    <Text style={styles.yourRankNumber}>Citizen</Text>
+                    <Text style={styles.yourRankLabel}>Badge</Text>
+                  </View>
+                </View>
+              </View>
+            </BlurView>
 
-      {/* Leaderboard List */}
-      <FlatList
-        data={leaderboardData}
-        renderItem={renderLeaderboardItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-      />
+            {/* Leaderboard List */}
+            <View style={styles.leaderboardSection}>
+              <Text style={styles.sectionTitle}>
+                Top Contributors ({leaderboardData.length})
+              </Text>
+              
+              {leaderboardData.map((item, index) => (
+                <View key={item.id}>
+                  {renderLeaderboardItem({ item, index })}
+                </View>
+              ))}
+            </View>
 
-      {/* Badge Progress */}
-      <Card style={styles.progressCard}>
-        <Text style={styles.progressTitle}>Next Badge Progress</Text>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: '60%' }]} />
-        </View>
-        <Text style={styles.progressText}>
-          50 more points to reach "Mukhiya" badge
-        </Text>
-      </Card>
-    </SafeAreaView>
+            {/* Badge Progress with Glassmorphism */}
+            <BlurView intensity={80} tint="light" style={styles.progressBlurCard}>
+              <View style={styles.progressCardOverlay}>
+                <Text style={styles.progressTitle}>Next Badge Progress</Text>
+                <View style={styles.progressBar}>
+                  <LinearGradient
+                    colors={[theme.colors.primary, theme.colors.primary + '80']}
+                    style={[styles.progressFill, { width: '60%' }]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                  />
+                </View>
+                <Text style={styles.progressText}>
+                  50 more points to reach "Active Citizen" badge
+                </Text>
+              </View>
+            </BlurView>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -249,42 +302,78 @@ const createStyles = (theme) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  // Glassmorphism Header
+  headerBlur: {
+    borderRadius: 0,
+    overflow: 'hidden',
+    marginBottom: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.primary + '10',
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    backgroundColor: theme.colors.surface + '80',
   },
   title: {
     ...theme.typography.headlineSmall,
-    color: theme.colors.text,
-    fontWeight: 'bold',
+    color: theme.colors.onSurface,
+    fontWeight: '700',
   },
+  // Scroll Container
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: theme.spacing.xl,
+  },
+  // Glassmorphism Tab Navigation
   tabContainer: {
     flexDirection: 'row',
     paddingHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
+    gap: theme.spacing.sm,
   },
-  tab: {
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.sm,
-    marginRight: theme.spacing.sm,
+  filterTab: {
     borderRadius: theme.borderRadius.full,
-    backgroundColor: 'transparent',
+    overflow: 'hidden',
   },
-  activeTab: {
-    backgroundColor: theme.colors.primary40,
+  activeFilterTab: {
+    transform: [{ scale: 1.02 }],
+  },
+  filterTabBlur: {
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    backgroundColor: theme.colors.surface + '60',
   },
   tabText: {
-    ...theme.typography.labelMedium,
-    color: theme.colors.text,
+    ...theme.typography.labelSmall,
+    color: theme.colors.onSurface,
+    fontWeight: '500',
   },
   activeTabText: {
-    color: theme.colors.onPrimary,
+    color: theme.colors.primary,
+    fontWeight: '700',
   },
-  yourRankCard: {
+  // Your Rank Glassmorphism Card
+  yourRankBlurCard: {
     marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.lg,
+    borderRadius: theme.borderRadius.xl,
+    overflow: 'hidden',
+  },
+  yourRankCardOverlay: {
+    backgroundColor: theme.colors.surface + '80',
+    padding: theme.spacing.lg,
   },
   yourRankHeader: {
     flexDirection: 'row',
@@ -292,40 +381,64 @@ const createStyles = (theme) => StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   yourRankTitle: {
-    ...theme.typography.titleMedium,
-    color: theme.colors.text,
+    ...theme.typography.titleSmall,
+    color: theme.colors.onSurface,
     fontWeight: '600',
     marginLeft: theme.spacing.sm,
   },
   yourRankStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
   },
   yourRankItem: {
     alignItems: 'center',
+    flex: 1,
   },
   yourRankNumber: {
-    ...theme.typography.titleMedium,
-    color: theme.colors.primary40,
-    fontWeight: 'bold',
+    ...theme.typography.titleSmall,
+    color: theme.colors.primary,
+    fontWeight: '700',
   },
   yourRankLabel: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.7,
-    marginTop: theme.spacing.xxs,
+    color: theme.colors.onSurfaceVariant,
+    marginTop: theme.spacing.xs,
   },
-  listContainer: {
+  statDivider: {
+    width: 1,
+    height: 24,
+    backgroundColor: theme.colors.outline + '30',
+    marginHorizontal: theme.spacing.sm,
+  },
+  // Leaderboard Section
+  leaderboardSection: {
     paddingHorizontal: theme.spacing.lg,
-    paddingBottom: theme.spacing.lg,
   },
-  itemCard: {
+  sectionTitle: {
+    ...theme.typography.titleSmall,
+    color: theme.colors.onSurface,
+    fontWeight: '600',
     marginBottom: theme.spacing.md,
   },
+  // Glassmorphism Leaderboard Items
+  itemCardContainer: {
+    marginBottom: theme.spacing.md,
+    borderRadius: theme.borderRadius.lg,
+    overflow: 'hidden',
+  },
+  itemCardBlur: {
+    borderRadius: theme.borderRadius.lg,
+    overflow: 'hidden',
+  },
+  itemCard: {
+    backgroundColor: theme.colors.surface + '80',
+    padding: theme.spacing.md,
+  },
   topThreeCard: {
-    borderWidth: 2,
-    borderColor: theme.colors.primary40 + '30',
-    backgroundColor: theme.colors.primary40 + '05',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '30',
+    backgroundColor: theme.colors.primary + '08',
   },
   itemContent: {
     flexDirection: 'row',
@@ -335,28 +448,29 @@ const createStyles = (theme) => StyleSheet.create({
   rankSection: {
     alignItems: 'center',
     marginRight: theme.spacing.md,
+    minWidth: 48,
   },
   rankBadge: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: theme.colors.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceVariant + '80',
   },
   topRankBadge: {
-    backgroundColor: theme.colors.primary40,
+    backgroundColor: theme.colors.primary + '20',
   },
   rankText: {
-    ...theme.typography.labelMedium,
-    color: theme.colors.text,
-    fontWeight: 'bold',
+    ...theme.typography.labelSmall,
+    color: theme.colors.onSurfaceVariant,
+    fontWeight: '700',
   },
   topRankText: {
-    color: theme.colors.onPrimary,
+    color: theme.colors.primary,
   },
   trophyIcon: {
-    marginTop: theme.spacing.xxs,
+    marginTop: theme.spacing.xs,
   },
   avatarSection: {
     marginRight: theme.spacing.md,
@@ -365,22 +479,29 @@ const createStyles = (theme) => StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: theme.colors.surfaceContainer,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: theme.colors.surfaceVariant + '60',
   },
   userInfo: {
     flex: 1,
   },
   userName: {
     ...theme.typography.titleSmall,
-    color: theme.colors.text,
+    color: theme.colors.onSurface,
     fontWeight: '600',
-    marginBottom: theme.spacing.xxs,
+    marginBottom: theme.spacing.xs,
   },
   badgeContainer: {
+    alignSelf: 'flex-start',
+  },
+  badgeBackground: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    backgroundColor: theme.colors.surfaceVariant + '40',
   },
   badgeText: {
     ...theme.typography.bodySmall,
@@ -394,61 +515,68 @@ const createStyles = (theme) => StyleSheet.create({
     alignItems: 'center',
   },
   pointsText: {
-    ...theme.typography.titleMedium,
-    color: theme.colors.primary40,
-    fontWeight: 'bold',
+    ...theme.typography.titleSmall,
+    color: theme.colors.primary,
+    fontWeight: '700',
   },
   pointsLabel: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.6,
+    color: theme.colors.onSurfaceVariant,
   },
   expandedStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
     paddingTop: theme.spacing.md,
     borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    borderTopColor: theme.colors.outline + '20',
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
   },
   statNumber: {
-    ...theme.typography.labelLarge,
-    color: theme.colors.text,
-    fontWeight: 'bold',
+    ...theme.typography.labelMedium,
+    color: theme.colors.onSurface,
+    fontWeight: '700',
   },
   statLabel: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.6,
-    marginTop: theme.spacing.xxs,
+    color: theme.colors.onSurfaceVariant,
+    marginTop: theme.spacing.xs,
   },
-  progressCard: {
+  // Progress Card Glassmorphism
+  progressBlurCard: {
     marginHorizontal: theme.spacing.lg,
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.xxxl,
+    borderRadius: theme.borderRadius.xl,
+    overflow: 'hidden',
+  },
+  progressCardOverlay: {
+    backgroundColor: theme.colors.surface + '80',
+    padding: theme.spacing.lg,
   },
   progressTitle: {
     ...theme.typography.titleSmall,
-    color: theme.colors.text,
+    color: theme.colors.onSurface,
     fontWeight: '600',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
   },
   progressBar: {
     height: 8,
-    backgroundColor: theme.colors.surfaceContainer,
+    backgroundColor: theme.colors.surfaceVariant,
     borderRadius: 4,
     marginBottom: theme.spacing.sm,
+    overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: theme.colors.primary40,
     borderRadius: 4,
   },
   progressText: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.7,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
   },
 });
 

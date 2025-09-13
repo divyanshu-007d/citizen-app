@@ -10,6 +10,8 @@ import {
   Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../design-system';
 import Card from '../../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';

@@ -4,7 +4,8 @@ import { TouchableOpacity, Text, ActivityIndicator, View } from 'react-native';
 import { useTheme } from '../../design-system';
 
 /**
- * Button Component following Material Design 3
+ * Enhanced Material Design 3 Button Component
+ * Professional, government-grade styling with full accessibility support
  * 
  * @param {Object} props
  * @param {string} props.variant - 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal'
@@ -15,6 +16,8 @@ import { useTheme } from '../../design-system';
  * @param {React.ReactNode} props.leftIcon - Icon to show on the left side
  * @param {React.ReactNode} props.rightIcon - Icon to show on the right side
  * @param {string} props.title - Button text
+ * @param {Object} props.style - Custom container styles
+ * @param {Object} props.textStyle - Custom text styles
  */
 const Button = ({
   variant = 'filled',
@@ -39,59 +42,67 @@ const Button = ({
       style={[buttonStyles.container, style]}
       onPress={onPress}
       disabled={disabled || loading}
-      activeOpacity={0.7}
+      activeOpacity={0.8}
+      accessible={true}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading }}
+      accessibilityLabel={title}
       {...rest}
     >
-      {leftIcon && !loading && (
-        <View style={buttonStyles.iconLeft}>
-          {leftIcon}
-        </View>
-      )}
-      
-      {loading ? (
-        <ActivityIndicator 
-          size="small" 
-          color={buttonStyles.activityIndicatorColor}
-        />
-      ) : (
-        <Text style={[buttonStyles.text, textStyle]}>
-          {title}
-        </Text>
-      )}
-      
-      {rightIcon && !loading && (
-        <View style={buttonStyles.iconRight}>
-          {rightIcon}
-        </View>
-      )}
+      <View style={buttonStyles.content}>
+        {loading ? (
+          <ActivityIndicator 
+            size="small" 
+            color={buttonStyles.activityIndicatorColor}
+            style={buttonStyles.loader}
+          />
+        ) : (
+          <>
+            {leftIcon && (
+              <View style={buttonStyles.iconLeft}>
+                {leftIcon}
+              </View>
+            )}
+            
+            {title && (
+              <Text style={[buttonStyles.text, textStyle]} numberOfLines={1}>
+                {title}
+              </Text>
+            )}
+            
+            {rightIcon && (
+              <View style={buttonStyles.iconRight}>
+                {rightIcon}
+              </View>
+            )}
+          </>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };
 
 // Get dynamic styles based on variant, theme, and state
 const getButtonStyles = (theme, variant, size, disabled) => {
-  // Define sizes
+  // Define sizes with proper Material Design 3 proportions
   const sizes = {
     small: {
-      paddingVertical: theme.spacing.xxs,
+      paddingVertical: theme.spacing.xs,
       paddingHorizontal: theme.spacing.md,
-      borderRadius: theme.borderRadius.small,
-      minHeight: 32,
-      ...theme.typography.labelSmall,
+      borderRadius: theme.componentTokens.button.borderRadius,
+      minHeight: theme.componentTokens.button.height.small,
     },
     medium: {
-      paddingVertical: theme.spacing.xs,
-      paddingHorizontal: theme.spacing.lg,
-      borderRadius: theme.borderRadius.medium,
-      minHeight: 40,
-      ...theme.typography.labelMedium,
+      paddingVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.buttonPadding,
+      borderRadius: theme.componentTokens.button.borderRadius,
+      minHeight: theme.componentTokens.button.height.medium,
     },
     large: {
-      paddingVertical: theme.spacing.sm,
-      paddingHorizontal: theme.spacing.xl,
-      borderRadius: theme.borderRadius.large,
-      minHeight: 48,
-      ...theme.typography.labelLarge,
+      paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.lg,
+      borderRadius: theme.componentTokens.button.borderRadius,
+      minHeight: theme.componentTokens.button.height.large,
     },
   };
 
@@ -101,81 +112,133 @@ const getButtonStyles = (theme, variant, size, disabled) => {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
+      alignSelf: 'flex-start',
       ...sizes[size],
     },
+    content: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     text: {
+      ...theme.typography.labelLarge,
+      fontWeight: '500',
       textAlign: 'center',
-      fontWeight: '600',
     },
     iconLeft: {
-      marginRight: theme.spacing.xs,
+      marginRight: theme.spacing.componentGap,
     },
     iconRight: {
-      marginLeft: theme.spacing.xs,
+      marginLeft: theme.spacing.componentGap,
+    },
+    loader: {
+      // No additional styling needed
     },
   };
 
-  // Variant specific styles
+  // Variant specific styles following Material Design 3
   const variantStyles = {
     filled: {
       container: {
-        backgroundColor: disabled ? theme.colors.disabledContainer : theme.colors.primary40,
-        ...theme.elevation.level1,
+        backgroundColor: disabled 
+          ? theme.colors.surfaceVariant 
+          : theme.colors.primary,
+        ...theme.elevation.level0,
       },
       text: {
-        color: disabled ? theme.colors.disabledText : theme.colors.onPrimary,
+        color: disabled 
+          ? theme.colors.onSurfaceVariant 
+          : theme.colors.onPrimary,
       },
-      activityIndicatorColor: disabled ? theme.colors.disabledText : theme.colors.onPrimary,
+      activityIndicatorColor: disabled 
+        ? theme.colors.onSurfaceVariant 
+        : theme.colors.onPrimary,
     },
+    
     outlined: {
       container: {
         backgroundColor: 'transparent',
         borderWidth: 1,
-        borderColor: disabled ? theme.colors.disabledContainer : theme.colors.primary40,
+        borderColor: disabled 
+          ? theme.colors.surfaceVariant 
+          : theme.colors.outline,
       },
       text: {
-        color: disabled ? theme.colors.disabledText : theme.colors.primary40,
+        color: disabled 
+          ? theme.colors.onSurfaceVariant 
+          : theme.colors.primary,
       },
-      activityIndicatorColor: disabled ? theme.colors.disabledText : theme.colors.primary40,
+      activityIndicatorColor: disabled 
+        ? theme.colors.onSurfaceVariant 
+        : theme.colors.primary,
     },
+    
     text: {
       container: {
         backgroundColor: 'transparent',
         paddingHorizontal: theme.spacing.sm,
+        ...theme.elevation.level0,
       },
       text: {
-        color: disabled ? theme.colors.disabledText : theme.colors.primary40,
+        color: disabled 
+          ? theme.colors.onSurfaceVariant 
+          : theme.colors.primary,
       },
-      activityIndicatorColor: disabled ? theme.colors.disabledText : theme.colors.primary40,
+      activityIndicatorColor: disabled 
+        ? theme.colors.onSurfaceVariant 
+        : theme.colors.primary,
     },
+    
     elevated: {
       container: {
-        backgroundColor: disabled ? theme.colors.disabledContainer : theme.colors.surfaceContainerLow,
-        ...theme.elevation.level2,
+        backgroundColor: disabled 
+          ? theme.colors.surfaceVariant 
+          : theme.colors.surface,
+        ...theme.elevation.level1,
       },
       text: {
-        color: disabled ? theme.colors.disabledText : theme.colors.primary40,
+        color: disabled 
+          ? theme.colors.onSurfaceVariant 
+          : theme.colors.primary,
       },
-      activityIndicatorColor: disabled ? theme.colors.disabledText : theme.colors.primary40,
+      activityIndicatorColor: disabled 
+        ? theme.colors.onSurfaceVariant 
+        : theme.colors.primary,
     },
+    
     tonal: {
       container: {
-        backgroundColor: disabled ? theme.colors.disabledContainer : theme.colors.secondaryContainer,
+        backgroundColor: disabled 
+          ? theme.colors.surfaceVariant 
+          : theme.colors.secondaryContainer,
+        ...theme.elevation.level0,
       },
       text: {
-        color: disabled ? theme.colors.disabledText : theme.colors.onSecondaryContainer,
+        color: disabled 
+          ? theme.colors.onSurfaceVariant 
+          : theme.colors.onSecondaryContainer,
       },
-      activityIndicatorColor: disabled ? theme.colors.disabledText : theme.colors.onSecondaryContainer,
+      activityIndicatorColor: disabled 
+        ? theme.colors.onSurfaceVariant 
+        : theme.colors.onSecondaryContainer,
     },
   };
 
-  // Combine and return the styles
+  // Merge base styles with variant-specific styles
   return {
-    container: {...baseStyles.container, ...variantStyles[variant].container},
-    text: {...baseStyles.text, ...variantStyles[variant].text},
+    container: {
+      ...baseStyles.container,
+      ...variantStyles[variant]?.container,
+    },
+    content: baseStyles.content,
+    text: {
+      ...baseStyles.text,
+      ...variantStyles[variant]?.text,
+    },
     iconLeft: baseStyles.iconLeft,
     iconRight: baseStyles.iconRight,
-    activityIndicatorColor: variantStyles[variant].activityIndicatorColor,
+    loader: baseStyles.loader,
+    activityIndicatorColor: variantStyles[variant]?.activityIndicatorColor,
   };
 };
 

@@ -375,16 +375,27 @@ export const typography = {
 };
 
 /**
- * Spacing Scale - Consistent spacing system
+ * Spacing Scale - Consistent spacing system with semantic names
  */
 export const spacing = {
-  xs: 4,
-  sm: 8,
-  md: 16,
-  lg: 24,
-  xl: 32,
-  xxl: 48,
-  xxxl: 64,
+  xs: 4,    // Micro spacing - icons, small gaps
+  sm: 8,    // Small spacing - between related elements  
+  md: 16,   // Default spacing - most common use
+  lg: 24,   // Large spacing - section separation
+  xl: 32,   // Extra large - major sections
+  xxl: 48,  // Screen margins, major layout separation
+  xxxl: 64, // Hero sections, major breaks
+  
+  // Semantic spacing for specific use cases
+  componentGap: 8,      // Between small components
+  sectionGap: 16,       // Between sections
+  screenPadding: 16,    // Default screen horizontal padding
+  cardPadding: 16,      // Default card internal padding
+  buttonPadding: 16,    // Default button horizontal padding
+  
+  // Touch targets (accessibility)
+  minTouchTarget: 48,   // Minimum touch target size
+  touchPadding: 8,      // Minimum padding around touchable elements
 };
 
 /**

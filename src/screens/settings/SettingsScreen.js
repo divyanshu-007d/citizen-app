@@ -9,6 +9,8 @@ import {
   Alert 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../design-system';
 import Card from '../../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -193,68 +195,98 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <FontAwesome5 name="chevron-left" size={20} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Settings</Text>
-        <View style={styles.placeholder} />
-      </View>
+    <View style={styles.container}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[
+          theme.colors.primary + '08',
+          theme.colors.secondary + '05',
+          theme.colors.background
+        ]}
+        locations={[0, 0.5, 1]}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Glassmorphism Header */}
+          <BlurView intensity={80} tint="light" style={styles.headerBlur}>
+            <View style={styles.header}>
+              <TouchableOpacity 
+                onPress={() => navigation.goBack()} 
+                style={styles.backButtonContainer}
+              >
+                <BlurView intensity={30} tint="light" style={styles.backButton}>
+                  <FontAwesome5 name="chevron-left" size={18} color={theme.colors.primary} />
+                </BlurView>
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Settings</Text>
+              <View style={styles.placeholder} />
+            </View>
+          </BlurView>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {settingsSections.map((section, sectionIndex) => (
-          <View key={section.title} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <Card style={styles.sectionCard}>
-              {section.items.map((item, itemIndex) => (
-                <TouchableOpacity
-                  key={item.id}
-                  style={[
-                    styles.settingsItem,
-                    itemIndex === section.items.length - 1 && styles.lastItem
-                  ]}
-                  onPress={() => handleItemPress(item)}
-                >
-                  <View style={styles.itemLeft}>
-                    <View style={[
-                      styles.itemIcon,
-                      item.danger && styles.dangerIcon
-                    ]}>
-                      <FontAwesome5 
-                        name={item.icon} 
-                        size={20} 
-                        color={item.danger ? theme.colors.error : theme.colors.primary40} 
-                      />
-                    </View>
-                    <View style={styles.itemContent}>
-                      <Text style={[
-                        styles.itemTitle,
-                        item.danger && styles.dangerText
-                      ]}>
-                        {item.title}
-                      </Text>
-                      <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
-                    </View>
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {settingsSections.map((section, sectionIndex) => (
+              <View key={section.title} style={styles.section}>
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <BlurView intensity={80} tint="light" style={styles.sectionCardBlur}>
+                  <View style={styles.sectionCard}>
+                    {section.items.map((item, itemIndex) => (
+                      <TouchableOpacity
+                        key={item.id}
+                        style={[
+                          styles.settingsItem,
+                          itemIndex === section.items.length - 1 && styles.lastItem
+                        ]}
+                        onPress={() => handleItemPress(item)}
+                      >
+                        <View style={styles.itemLeft}>
+                          <BlurView intensity={30} tint="light" style={[
+                            styles.itemIcon,
+                            item.danger && styles.dangerIcon
+                          ]}>
+                            <FontAwesome5 
+                              name={item.icon} 
+                              size={18} 
+                              color={item.danger ? theme.colors.error : theme.colors.primary} 
+                            />
+                          </BlurView>
+                          <View style={styles.itemContent}>
+                            <Text style={[
+                              styles.itemTitle,
+                              item.danger && styles.dangerText
+                            ]}>
+                              {item.title}
+                            </Text>
+                            <Text style={styles.itemSubtitle}>{item.subtitle}</Text>
+                          </View>
+                        </View>
+                        <FontAwesome5 
+                          name="chevron-right" 
+                          size={14} 
+                          color={theme.colors.onSurfaceVariant} 
+                        />
+                      </TouchableOpacity>
+                    ))}
                   </View>
-                  <FontAwesome5 
-                    name="chevron-right" 
-                    size={16} 
-                    color={theme.colors.neutral40} 
-                  />
-                </TouchableOpacity>
-              ))}
-            </Card>
-          </View>
-        ))}
+                </BlurView>
+              </View>
+            ))}
 
-        {/* App Version */}
-        <View style={styles.versionSection}>
-          <Text style={styles.versionText}>Citizen App v1.0.0</Text>
-          <Text style={styles.buildText}>Build 2024.09.13</Text>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            {/* App Version */}
+            <BlurView intensity={60} tint="light" style={styles.versionSectionBlur}>
+              <View style={styles.versionSection}>
+                <FontAwesome5 name="mobile-alt" size={24} color={theme.colors.primary} />
+                <Text style={styles.versionText}>Janta App v1.2.0</Text>
+                <Text style={styles.buildText}>Build 2024.09.13 • Made with ❤️ for India</Text>
+              </View>
+            </BlurView>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -263,49 +295,83 @@ const createStyles = (theme) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  // Glassmorphism Header
+  headerBlur: {
+    borderRadius: 0,
+    overflow: 'hidden',
+    marginBottom: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.primary + '10',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+    backgroundColor: theme.colors.surface + '80',
+  },
+  backButtonContainer: {
+    borderRadius: theme.borderRadius.full,
+    overflow: 'hidden',
   },
   backButton: {
-    padding: theme.spacing.sm,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surfaceVariant + '60',
   },
   headerTitle: {
-    ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    ...theme.typography.headlineSmall,
+    color: theme.colors.onSurface,
+    fontWeight: '700',
   },
   placeholder: {
-    width: 40,
+    width: 36,
+  },
+  // Scroll Container
+  scrollContainer: {
+    flex: 1,
   },
   scrollContent: {
-    padding: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.xl,
   },
+  // Section Styling
   section: {
     marginBottom: theme.spacing.lg,
   },
   sectionTitle: {
     ...theme.typography.titleSmall,
-    color: theme.colors.text,
+    color: theme.colors.onSurface,
     fontWeight: '600',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
     paddingHorizontal: theme.spacing.sm,
   },
+  sectionCardBlur: {
+    borderRadius: theme.borderRadius.xl,
+    overflow: 'hidden',
+  },
   sectionCard: {
+    backgroundColor: theme.colors.surface + '80',
     paddingVertical: 0,
   },
+  // Settings Items
   settingsItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
+    paddingHorizontal: theme.spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    borderBottomColor: theme.colors.outline + '20',
   },
   lastItem: {
     borderBottomWidth: 0,
@@ -319,48 +385,52 @@ const createStyles = (theme) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: theme.colors.primary40 + '20',
+    backgroundColor: theme.colors.primary + '10',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: theme.spacing.md,
   },
   dangerIcon: {
-    backgroundColor: theme.colors.error + '20',
+    backgroundColor: theme.colors.error + '10',
   },
   itemContent: {
     flex: 1,
   },
   itemTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text,
+    ...theme.typography.bodyMedium,
+    color: theme.colors.onSurface,
     fontWeight: '600',
-    marginBottom: theme.spacing.xxs,
+    marginBottom: theme.spacing.xs,
   },
   dangerText: {
     color: theme.colors.error,
   },
   itemSubtitle: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.7,
+    color: theme.colors.onSurfaceVariant,
+  },
+  // Version Section
+  versionSectionBlur: {
+    marginTop: theme.spacing.lg,
+    borderRadius: theme.borderRadius.xl,
+    overflow: 'hidden',
   },
   versionSection: {
     alignItems: 'center',
-    marginTop: theme.spacing.xl,
-    paddingTop: theme.spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
+    backgroundColor: theme.colors.surface + '60',
+    paddingVertical: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.lg,
+    gap: theme.spacing.sm,
   },
   versionText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.text,
-    opacity: 0.7,
+    ...theme.typography.titleSmall,
+    color: theme.colors.onSurface,
+    fontWeight: '600',
   },
   buildText: {
     ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.5,
-    marginTop: theme.spacing.xs,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
   },
 });
 

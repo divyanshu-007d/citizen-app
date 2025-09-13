@@ -4,29 +4,43 @@ import { View, StyleSheet } from 'react-native';
 import { useTheme } from '../../design-system';
 
 /**
- * Card Component following Material Design 3
+ * Enhanced Card Component following Material Design 3
+ * Professional card with proper elevation and spacing for civic applications
  * 
  * @param {Object} props
  * @param {string} props.variant - 'elevated' | 'filled' | 'outlined'
  * @param {React.ReactNode} props.children - Content of the card
  * @param {Object} props.style - Custom styles for the card
+ * @param {boolean} props.interactive - Whether the card is interactive/touchable
  */
-const Card = ({ variant = 'elevated', children, style, ...rest }) => {
+const Card = ({ 
+  variant = 'elevated', 
+  children, 
+  style, 
+  interactive = false,
+  ...rest 
+}) => {
   const { theme } = useTheme();
-  const styles = createStyles(theme, variant);
+  const styles = createStyles(theme, variant, interactive);
 
   return (
-    <View style={[styles.card, style]} {...rest}>
+    <View 
+      style={[styles.card, style]} 
+      accessible={interactive}
+      accessibilityRole={interactive ? "button" : "none"}
+      {...rest}
+    >
       {children}
     </View>
   );
 };
 
-const createStyles = (theme, variant) => {
+const createStyles = (theme, variant, interactive) => {
   const baseStyle = {
-    borderRadius: theme.borderRadius.medium,
-    padding: theme.spacing.md,
+    borderRadius: theme.componentTokens.card.borderRadius,
+    padding: theme.componentTokens.card.padding,
     width: '100%',
+    overflow: 'hidden',
   };
 
   const variantStyles = {
@@ -35,19 +49,28 @@ const createStyles = (theme, variant) => {
       ...theme.elevation.level1,
     },
     filled: {
-      backgroundColor: theme.colors.surfaceContainer,
+      backgroundColor: theme.colors.surfaceContainerHighest,
+      ...theme.elevation.level0,
     },
     outlined: {
-      backgroundColor: 'transparent',
+      backgroundColor: theme.colors.surface,
       borderWidth: 1,
-      borderColor: theme.colors.border,
+      borderColor: theme.colors.outlineVariant,
+      ...theme.elevation.level0,
     },
   };
+
+  // Add interactive state styling
+  const interactiveStyle = interactive ? {
+    // Subtle visual cue for interactive cards
+    transform: [{ scale: 1 }], // Enables transform animations
+  } : {};
 
   return StyleSheet.create({
     card: {
       ...baseStyle,
       ...variantStyles[variant],
+      ...interactiveStyle,
     },
   });
 };
