@@ -10,6 +10,8 @@ import {
   Image 
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../design-system';
 import Button from '../components/common/Button';
 import Input from '../components/common/Input';
@@ -99,140 +101,210 @@ const ReportScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Report an Issue</Text>
-          <Text style={styles.subtitle}>Help make your community better</Text>
-        </View>
+    <View style={styles.container}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[
+          theme.colors.primary + '08',
+          theme.colors.secondary + '05',
+          theme.colors.background
+        ]}
+        locations={[0, 0.4, 1]}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Glassmorphism Header */}
+          <BlurView intensity={80} tint="light" style={styles.headerBlur}>
+            <View style={styles.header}>
+              <Text style={styles.title}>Report an Issue</Text>
+              <Text style={styles.subtitle}>Help make your community better</Text>
+            </View>
+          </BlurView>
 
-        {/* Quick Actions */}
-        <Card style={styles.quickActionsCard}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity 
-              style={styles.quickActionButton}
-              onPress={() => Alert.alert('Feature Coming Soon', 'Voice report will be available soon!')}
-            >
-              <FontAwesome5 name="microphone" size={24} color={theme.colors.primary40} />
-              <Text style={styles.quickActionText}>Voice Report</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.quickActionButton}
-              onPress={() => Alert.alert('Feature Coming Soon', 'Camera report will be available soon!')}
-            >
-              <FontAwesome5 name="camera" size={24} color={theme.colors.primary40} />
-              <Text style={styles.quickActionText}>Quick Photo</Text>
-            </TouchableOpacity>
-          </View>
-        </Card>
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {/* Quick Actions */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Quick Actions</Text>
+              <View style={styles.quickActionsGrid}>
+                <TouchableOpacity 
+                  style={styles.quickActionContainer}
+                  onPress={() => Alert.alert('Feature Coming Soon', 'Voice report will be available soon!')}
+                >
+                  <BlurView intensity={80} tint="light" style={styles.quickActionBlur}>
+                    <View style={styles.quickActionButton}>
+                      <BlurView intensity={30} tint="light" style={styles.quickActionIconContainer}>
+                        <FontAwesome5 name="microphone" size={24} color={theme.colors.primary} />
+                      </BlurView>
+                      <Text style={styles.quickActionText}>Voice Report</Text>
+                      <Text style={styles.quickActionSubtext}>Speak your complaint</Text>
+                    </View>
+                  </BlurView>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={styles.quickActionContainer}
+                  onPress={() => Alert.alert('Feature Coming Soon', 'Camera report will be available soon!')}
+                >
+                  <BlurView intensity={80} tint="light" style={styles.quickActionBlur}>
+                    <View style={styles.quickActionButton}>
+                      <BlurView intensity={30} tint="light" style={styles.quickActionIconContainer}>
+                        <FontAwesome5 name="camera" size={24} color={theme.colors.primary} />
+                      </BlurView>
+                      <Text style={styles.quickActionText}>Quick Photo</Text>
+                      <Text style={styles.quickActionSubtext}>Capture & report</Text>
+                    </View>
+                  </BlurView>
+                </TouchableOpacity>
+              </View>
+            </View>
 
-        {/* Report Form */}
-        <Card style={styles.formCard}>
-          <Text style={styles.sectionTitle}>Complaint Details</Text>
+            {/* Report Form */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Complaint Details</Text>
+              <BlurView intensity={80} tint="light" style={styles.formCardBlur}>
+                <View style={styles.formCard}>
+                  <Input
+                    label="Title *"
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder="Brief title of the issue"
+                    leftIcon={<FontAwesome5 name="edit" size={18} color={theme.colors.primary} />}
+                  />
 
-          <Input
-            label="Title *"
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Brief title of the issue"
-            leftIcon={<FontAwesome5 name="edit" size={18} color={theme.colors.neutral60} />}
-          />
+                  <Input
+                    label="Description *"
+                    value={description}
+                    onChangeText={setDescription}
+                    placeholder="Describe the issue in detail"
+                    multiline={true}
+                    numberOfLines={4}
+                    leftIcon={<FontAwesome5 name="align-left" size={18} color={theme.colors.primary} />}
+                  />
 
-          <Input
-            label="Description *"
-            value={description}
-            onChangeText={setDescription}
-            placeholder="Describe the issue in detail"
-            multiline={true}
-            numberOfLines={4}
-            leftIcon={<FontAwesome5 name="align-left" size={18} color={theme.colors.neutral60} />}
-          />
+                  {/* Category Selection */}
+                  <Text style={styles.fieldLabel}>Category *</Text>
+                  <View style={styles.categoryGrid}>
+                    {categories.map((category) => (
+                      <TouchableOpacity
+                        key={category.id}
+                        style={styles.categoryButtonContainer}
+                        onPress={() => handleCategorySelect(category)}
+                      >
+                        <BlurView 
+                          intensity={selectedCategory?.id === category.id ? 60 : 40} 
+                          tint="light" 
+                          style={[
+                            styles.categoryButton,
+                            selectedCategory?.id === category.id && styles.selectedCategoryBlur
+                          ]}
+                        >
+                          <BlurView intensity={30} tint="light" style={[
+                            styles.categoryIconContainer,
+                            selectedCategory?.id === category.id && styles.selectedCategoryIcon
+                          ]}>
+                            <FontAwesome5 
+                              name={category.icon} 
+                              size={18} 
+                              color={selectedCategory?.id === category.id ? theme.colors.surface : theme.colors.primary} 
+                            />
+                          </BlurView>
+                          <Text style={[
+                            styles.categoryText,
+                            selectedCategory?.id === category.id && styles.selectedCategoryText
+                          ]}>
+                            {category.name}
+                          </Text>
+                        </BlurView>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
 
-          {/* Category Selection */}
-          <Text style={styles.fieldLabel}>Category *</Text>
-          <View style={styles.categoryGrid}>
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category.id}
-                style={[
-                  styles.categoryButton,
-                  selectedCategory?.id === category.id && styles.selectedCategory
-                ]}
-                onPress={() => handleCategorySelect(category)}
-              >
-                <FontAwesome5 
-                  name={category.icon} 
-                  size={20} 
-                  color={selectedCategory?.id === category.id ? theme.colors.onPrimary : theme.colors.primary40} 
+                  {/* Location */}
+                  <Text style={styles.fieldLabel}>Location</Text>
+                  <TouchableOpacity style={styles.locationButtonContainer} onPress={handleLocationPicker}>
+                    <BlurView intensity={60} tint="light" style={styles.locationButton}>
+                      <BlurView intensity={30} tint="light" style={styles.locationIconContainer}>
+                        <FontAwesome5 name="map-marker-alt" size={18} color={theme.colors.primary} />
+                      </BlurView>
+                      <Text style={styles.locationText}>
+                        {location || 'Tap to set location'}
+                      </Text>
+                      <BlurView intensity={30} tint="light" style={styles.chevronContainer}>
+                        <FontAwesome5 name="chevron-right" size={14} color={theme.colors.primary} />
+                      </BlurView>
+                    </BlurView>
+                  </TouchableOpacity>
+
+                  {/* Images */}
+                  <Text style={styles.fieldLabel}>Photos (Optional)</Text>
+                  <TouchableOpacity style={styles.imageButtonContainer} onPress={handleImagePicker}>
+                    <BlurView intensity={60} tint="light" style={styles.imageButton}>
+                      <BlurView intensity={30} tint="light" style={styles.imageIconContainer}>
+                        <FontAwesome5 name="camera" size={24} color={theme.colors.primary} />
+                      </BlurView>
+                      <Text style={styles.imageButtonText}>Add Photos</Text>
+                      <Text style={styles.imageSubtext}>Max 5 photos</Text>
+                    </BlurView>
+                  </TouchableOpacity>
+
+                  {/* Priority Level */}
+                  <Text style={styles.fieldLabel}>Priority Level</Text>
+                  <View style={styles.priorityGrid}>
+                    {['Low', 'Medium', 'High'].map((priority) => (
+                      <TouchableOpacity
+                        key={priority}
+                        style={styles.priorityButtonContainer}
+                        onPress={() => Alert.alert('Auto-Detection', 'Priority will be automatically determined by AI')}
+                      >
+                        <BlurView intensity={50} tint="light" style={styles.priorityButton}>
+                          <Text style={styles.priorityText}>{priority}</Text>
+                        </BlurView>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <Text style={styles.priorityNote}>
+                    Priority will be automatically determined based on your report
+                  </Text>
+                </View>
+              </BlurView>
+            </View>
+
+            {/* Submit Button */}
+            <View style={styles.submitButtonContainer}>
+              <BlurView intensity={80} tint="light" style={styles.submitButtonBlur}>
+                <Button
+                  title="Submit Complaint"
+                  onPress={handleSubmit}
+                  loading={loading}
+                  style={styles.submitButton}
                 />
-                <Text style={[
-                  styles.categoryText,
-                  selectedCategory?.id === category.id && styles.selectedCategoryText
-                ]}>
-                  {category.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+              </BlurView>
+            </View>
 
-          {/* Location */}
-          <Text style={styles.fieldLabel}>Location</Text>
-          <TouchableOpacity style={styles.locationButton} onPress={handleLocationPicker}>
-            <FontAwesome5 name="map-marker-alt" size={18} color={theme.colors.primary40} />
-            <Text style={styles.locationText}>
-              {location || 'Tap to set location'}
-            </Text>
-            <FontAwesome5 name="chevron-right" size={16} color={theme.colors.neutral60} />
-          </TouchableOpacity>
-
-          {/* Images */}
-          <Text style={styles.fieldLabel}>Photos (Optional)</Text>
-          <TouchableOpacity style={styles.imageButton} onPress={handleImagePicker}>
-            <FontAwesome5 name="camera" size={24} color={theme.colors.primary40} />
-            <Text style={styles.imageButtonText}>Add Photos</Text>
-            <Text style={styles.imageSubtext}>Max 5 photos</Text>
-          </TouchableOpacity>
-
-          {/* Priority Level */}
-          <Text style={styles.fieldLabel}>Priority Level</Text>
-          <View style={styles.priorityButtons}>
-            {['Low', 'Medium', 'High'].map((priority) => (
-              <TouchableOpacity
-                key={priority}
-                style={styles.priorityButton}
-                onPress={() => Alert.alert('Auto-Detection', 'Priority will be automatically determined by AI')}
-              >
-                <Text style={styles.priorityText}>{priority}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Text style={styles.priorityNote}>
-            Priority will be automatically determined based on your report
-          </Text>
-        </Card>
-
-        {/* Submit Button */}
-        <Button
-          title="Submit Complaint"
-          onPress={handleSubmit}
-          loading={loading}
-          style={styles.submitButton}
-        />
-
-        {/* AI Assistant Hint */}
-        <Card style={styles.aiHintCard}>
-          <View style={styles.aiHint}>
-            <FontAwesome5 name="robot" size={20} color={theme.colors.primary40} />
-            <Text style={styles.aiHintText}>
-              💡 Try our AI Voice Assistant for faster reporting!
-            </Text>
-          </View>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+            {/* AI Assistant Hint */}
+            <BlurView intensity={80} tint="light" style={styles.aiHintCardBlur}>
+              <View style={styles.aiHintCard}>
+                <View style={styles.aiHint}>
+                  <BlurView intensity={30} tint="light" style={styles.aiIconContainer}>
+                    <FontAwesome5 name="robot" size={20} color={theme.colors.primary} />
+                  </BlurView>
+                  <View style={styles.aiHintContent}>
+                    <Text style={styles.aiHintTitle}>AI Voice Assistant</Text>
+                    <Text style={styles.aiHintText}>
+                      Try our AI Voice Assistant for faster reporting!
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </BlurView>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -241,167 +313,319 @@ const createStyles = (theme) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  scrollContent: {
-    padding: theme.spacing.lg,
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  headerBlur: {
+    marginHorizontal: theme.spacing.md,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.lg,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
   },
   header: {
     alignItems: 'center',
-    marginBottom: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
   },
   title: {
-    ...theme.typography.headlineMedium,
-    color: theme.colors.text,
-    fontWeight: 'bold',
+    fontSize: theme.typography.headlineMedium.fontSize,
+    fontWeight: theme.typography.headlineMedium.fontWeight,
+    color: theme.colors.onSurface,
     marginBottom: theme.spacing.xs,
-  },
-  subtitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text,
-    opacity: 0.7,
     textAlign: 'center',
   },
-  quickActionsCard: {
-    marginBottom: theme.spacing.lg,
+  subtitle: {
+    fontSize: theme.typography.bodyLarge.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
+    lineHeight: theme.typography.bodyLarge.fontSize * 1.4,
+  },
+  scrollContainer: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: theme.spacing.md,
+    paddingBottom: theme.spacing.xxl,
+  },
+  section: {
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    ...theme.typography.titleMedium,
-    color: theme.colors.text,
-    fontWeight: '600',
+    fontSize: theme.typography.titleMedium.fontSize,
+    fontWeight: theme.typography.titleMedium.fontWeight,
+    color: theme.colors.onSurface,
     marginBottom: theme.spacing.md,
+    marginLeft: theme.spacing.sm,
   },
-  quickActions: {
+  quickActionsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    gap: theme.spacing.md,
+  },
+  quickActionContainer: {
+    flex: 1,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+  },
+  quickActionBlur: {
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '40',
   },
   quickActionButton: {
     alignItems: 'center',
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.medium,
-    backgroundColor: theme.colors.primary40 + '10',
-    flex: 1,
-    marginHorizontal: theme.spacing.xs,
+    padding: theme.spacing.lg,
+  },
+  quickActionIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: theme.spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   quickActionText: {
-    ...theme.typography.labelMedium,
-    color: theme.colors.primary40,
-    marginTop: theme.spacing.xs,
-    fontWeight: '600',
+    fontSize: theme.typography.labelLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.xs,
+    textAlign: 'center',
+  },
+  quickActionSubtext: {
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    textAlign: 'center',
+  },
+  formCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
   },
   formCard: {
-    marginBottom: theme.spacing.lg,
+    padding: theme.spacing.lg,
   },
   fieldLabel: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.text,
-    fontWeight: '600',
+    fontSize: theme.typography.bodyMedium.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.onSurface,
     marginBottom: theme.spacing.sm,
-    marginTop: theme.spacing.sm,
+    marginTop: theme.spacing.md,
   },
   categoryGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: theme.spacing.md,
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.lg,
+  },
+  categoryButtonContainer: {
+    width: '48%',
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
   },
   categoryButton: {
-    width: '48%',
     flexDirection: 'row',
     alignItems: 'center',
     padding: theme.spacing.md,
-    marginBottom: theme.spacing.xs,
-    marginRight: '2%',
-    borderRadius: theme.borderRadius.medium,
-    borderWidth: 2,
-    borderColor: theme.colors.border,
-    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '30',
   },
-  selectedCategory: {
-    backgroundColor: theme.colors.primary40,
-    borderColor: theme.colors.primary40,
+  selectedCategoryBlur: {
+    borderColor: theme.colors.primary + '30',
+    backgroundColor: theme.colors.primary + '15',
+  },
+  categoryIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: theme.spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '50',
+  },
+  selectedCategoryIcon: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   categoryText: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    marginLeft: theme.spacing.sm,
+    fontSize: theme.typography.bodySmall.fontSize,
+    fontWeight: theme.typography.labelMedium.fontWeight,
+    color: theme.colors.onSurface,
     flex: 1,
+    flexWrap: 'wrap',
   },
   selectedCategoryText: {
-    color: theme.colors.onPrimary,
+    color: theme.colors.primary,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+  },
+  locationButtonContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
+    marginBottom: theme.spacing.lg,
   },
   locationButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.medium,
-    backgroundColor: theme.colors.surfaceContainer,
+    padding: theme.spacing.lg,
     borderWidth: 1,
-    borderColor: theme.colors.border,
-    marginBottom: theme.spacing.md,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '40',
+  },
+  locationIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: theme.spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   locationText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.text,
+    fontSize: theme.typography.bodyMedium.fontSize,
+    color: theme.colors.onSurface,
     flex: 1,
-    marginLeft: theme.spacing.sm,
+  },
+  chevronContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: theme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
+  },
+  imageButtonContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
+    marginBottom: theme.spacing.lg,
   },
   imageButton: {
     alignItems: 'center',
-    padding: theme.spacing.xl,
-    borderRadius: theme.borderRadius.medium,
-    backgroundColor: theme.colors.surfaceContainer,
+    paddingVertical: theme.spacing.xxl,
+    paddingHorizontal: theme.spacing.lg,
     borderWidth: 2,
-    borderColor: theme.colors.border,
+    borderColor: theme.colors.primary + '20',
     borderStyle: 'dashed',
+    backgroundColor: theme.colors.surface + '30',
+  },
+  imageIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: theme.spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   imageButtonText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.primary40,
-    fontWeight: '600',
-    marginTop: theme.spacing.sm,
-  },
-  imageSubtext: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.6,
-    marginTop: theme.spacing.xs,
-  },
-  priorityButtons: {
-    flexDirection: 'row',
+    fontSize: theme.typography.bodyLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.primary,
     marginBottom: theme.spacing.xs,
   },
-  priorityButton: {
+  imageSubtext: {
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.onSurfaceVariant,
+  },
+  priorityGrid: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+  },
+  priorityButtonContainer: {
     flex: 1,
-    padding: theme.spacing.sm,
-    marginRight: theme.spacing.xs,
-    borderRadius: theme.borderRadius.medium,
-    backgroundColor: theme.colors.surfaceContainer,
+    borderRadius: theme.spacing.md,
+    overflow: 'hidden',
+  },
+  priorityButton: {
+    padding: theme.spacing.md,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '40',
   },
   priorityText: {
-    ...theme.typography.labelMedium,
-    color: theme.colors.text,
+    fontSize: theme.typography.labelMedium.fontSize,
+    fontWeight: theme.typography.labelMedium.fontWeight,
+    color: theme.colors.onSurface,
   },
   priorityNote: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.6,
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.onSurfaceVariant,
     fontStyle: 'italic',
+    lineHeight: theme.typography.bodySmall.fontSize * 1.4,
+  },
+  submitButtonContainer: {
+    marginTop: theme.spacing.lg,
+    marginBottom: theme.spacing.xl,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+  },
+  submitButtonBlur: {
+    padding: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '50',
   },
   submitButton: {
-    marginBottom: theme.spacing.lg,
+    margin: 0,
+  },
+  aiHintCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '08',
+    backgroundColor: theme.colors.surface + '30',
   },
   aiHintCard: {
-    marginBottom: theme.spacing.lg,
+    padding: theme.spacing.lg,
   },
   aiHint: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  aiHintText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.text,
-    marginLeft: theme.spacing.sm,
+  aiIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: theme.spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '50',
+  },
+  aiHintContent: {
     flex: 1,
+  },
+  aiHintTitle: {
+    fontSize: theme.typography.titleSmall.fontSize,
+    fontWeight: theme.typography.titleSmall.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.xs,
+  },
+  aiHintText: {
+    fontSize: theme.typography.bodyMedium.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: theme.typography.bodyMedium.fontSize * 1.4,
   },
 });
 

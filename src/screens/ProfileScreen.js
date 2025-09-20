@@ -19,11 +19,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 const ProfileScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const [user] = useState({
-    name: 'Samriddhi Singh',
+    name: 'Divyanshu Dubey',
     phone: '+91 9876543210',
-    email: 'samriddhi.singh@email.com',
+    email: 'divyanshu.dubey@email.com',
     location: 'New Delhi, India',
-    joinDate: 'March 2024',
+    joinDate: 'September 2025',
     points: 1250,
     badge: 'Active Citizen',
     level: 3,

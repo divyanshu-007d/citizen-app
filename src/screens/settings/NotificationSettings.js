@@ -217,29 +217,35 @@ const NotificationSettings = ({ navigation }) => {
         </View>
         
         {item.type === 'switch' && (
-          <Switch
-            value={settings[item.key]}
-            onValueChange={(value) => toggleSetting(item.key, value)}
-            thumbColor={theme.colors.primary40}
-            trackColor={{ 
-              false: theme.colors.neutral20, 
-              true: theme.colors.primary40 + '40' 
-            }}
-            disabled={isDisabled}
-          />
+          <View style={styles.switchContainer}>
+            <BlurView intensity={30} tint="light" style={styles.switchBlur}>
+              <Switch
+                value={settings[item.key]}
+                onValueChange={(value) => toggleSetting(item.key, value)}
+                thumbColor={settings[item.key] ? theme.colors.primary : theme.colors.surface}
+                trackColor={{ 
+                  false: theme.colors.surfaceVariant, 
+                  true: theme.colors.primary + '40' 
+                }}
+                disabled={isDisabled}
+              />
+            </BlurView>
+          </View>
         )}
         
         {(item.type === 'time' || item.type === 'select') && (
           <TouchableOpacity 
             onPress={item.action}
             disabled={isDisabled}
-            style={styles.actionButton}
+            style={styles.actionButtonContainer}
           >
-            <FontAwesome5 
-              name="chevron-right" 
-              size={16} 
-              color={isDisabled ? theme.colors.neutral40 : theme.colors.text} 
-            />
+            <BlurView intensity={30} tint="light" style={styles.actionButton}>
+              <FontAwesome5 
+                name="chevron-right" 
+                size={14} 
+                color={isDisabled ? theme.colors.onSurfaceVariant : theme.colors.primary} 
+              />
+            </BlurView>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -247,56 +253,89 @@ const NotificationSettings = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <FontAwesome5 name="chevron-left" size={20} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notification Settings</Text>
-        <View style={styles.placeholder} />
-      </View>
+    <View style={styles.container}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[
+          theme.colors.primary + '08',
+          theme.colors.secondary + '05',
+          theme.colors.background
+        ]}
+        locations={[0, 0.5, 1]}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Glassmorphism Header */}
+          <BlurView intensity={80} tint="light" style={styles.headerBlur}>
+            <View style={styles.header}>
+              <TouchableOpacity 
+                onPress={() => navigation.goBack()} 
+                style={styles.backButtonContainer}
+              >
+                <BlurView intensity={30} tint="light" style={styles.backButton}>
+                  <FontAwesome5 name="chevron-left" size={18} color={theme.colors.primary} />
+                </BlurView>
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Notification Settings</Text>
+              <View style={styles.placeholder} />
+            </View>
+          </BlurView>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {notificationSections.map((section, index) => (
-          <View key={section.title} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <Card style={styles.sectionCard}>
-              {section.items.map((item, itemIndex) => (
-                <View key={item.key}>
-                  {renderSettingItem(item)}
-                  {itemIndex < section.items.length - 1 && <View style={styles.separator} />}
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {notificationSections.map((section, index) => (
+              <View key={section.title} style={styles.section}>
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <BlurView intensity={80} tint="light" style={styles.sectionCardBlur}>
+                  <View style={styles.sectionCard}>
+                    {section.items.map((item, itemIndex) => (
+                      <View key={item.key}>
+                        {renderSettingItem(item)}
+                        {itemIndex < section.items.length - 1 && <View style={styles.separator} />}
+                      </View>
+                    ))}
+                  </View>
+                </BlurView>
+              </View>
+            ))}
+
+            {/* Test Notification Button */}
+            <TouchableOpacity 
+              style={styles.testButtonContainer}
+              onPress={() => Alert.alert('Test Notification', 'Test notification sent successfully!')}
+            >
+              <BlurView intensity={60} tint="light" style={styles.testButton}>
+                <FontAwesome5 name="bell" size={18} color={theme.colors.primary} />
+                <Text style={styles.testButtonText}>Send Test Notification</Text>
+              </BlurView>
+            </TouchableOpacity>
+
+            {/* Info Section */}
+            <BlurView intensity={80} tint="light" style={styles.infoCardBlur}>
+              <View style={styles.infoCard}>
+                <View style={styles.infoHeader}>
+                  <BlurView intensity={30} tint="light" style={styles.infoIconContainer}>
+                    <FontAwesome5 name="info-circle" size={18} color={theme.colors.primary} />
+                  </BlurView>
+                  <Text style={styles.infoTitle}>About Notifications</Text>
                 </View>
-              ))}
-            </Card>
-          </View>
-        ))}
-
-        {/* Test Notification Button */}
-        <TouchableOpacity 
-          style={styles.testButton}
-          onPress={() => Alert.alert('Test Notification', 'Test notification sent successfully!')}
-        >
-          <FontAwesome5 name="bell" size={16} color={theme.colors.primary40} />
-          <Text style={styles.testButtonText}>Send Test Notification</Text>
-        </TouchableOpacity>
-
-        {/* Info Section */}
-        <Card style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <FontAwesome5 name="info-circle" size={20} color={theme.colors.primary40} />
-            <Text style={styles.infoTitle}>About Notifications</Text>
-          </View>
-          <Text style={styles.infoText}>
-            Notifications help you stay informed about your complaints and community updates. 
-            You can customize which types of notifications you receive and when you receive them.
-          </Text>
-          <Text style={styles.infoText}>
-            Emergency notifications will always be delivered regardless of your settings to 
-            ensure important safety information reaches you.
-          </Text>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+                <Text style={styles.infoText}>
+                  Notifications help you stay informed about your complaints and community updates. 
+                  You can customize which types of notifications you receive and when you receive them.
+                </Text>
+                <Text style={styles.infoText}>
+                  Emergency notifications will always be delivered regardless of your settings to 
+                  ensure important safety information reaches you.
+                </Text>
+              </View>
+            </BlurView>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -305,114 +344,195 @@ const createStyles = (theme) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  headerBlur: {
+    paddingTop: theme.spacing.sm,
+    paddingBottom: theme.spacing.sm,
+    marginHorizontal: theme.spacing.md,
+    marginTop: theme.spacing.sm,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  backButtonContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
   },
   backButton: {
     padding: theme.spacing.sm,
+    borderRadius: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   headerTitle: {
-    ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    fontSize: theme.typography.titleLarge.fontSize,
+    fontWeight: theme.typography.titleLarge.fontWeight,
+    color: theme.colors.onSurface,
+    textAlign: 'center',
+    flex: 1,
   },
   placeholder: {
-    width: 40,
+    width: 42,
+  },
+  scrollContainer: {
+    flex: 1,
   },
   scrollContent: {
-    padding: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.xxl,
   },
   section: {
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    ...theme.typography.titleSmall,
-    color: theme.colors.text,
-    fontWeight: '600',
-    marginBottom: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.sm,
+    fontSize: theme.typography.titleMedium.fontSize,
+    fontWeight: theme.typography.titleMedium.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.md,
+    marginLeft: theme.spacing.sm,
+  },
+  sectionCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
   },
   sectionCard: {
-    paddingVertical: 0,
+    paddingVertical: theme.spacing.xs,
   },
   settingItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+    minHeight: 64,
   },
   disabledItem: {
     opacity: 0.5,
   },
   itemContent: {
     flex: 1,
+    justifyContent: 'center',
     marginRight: theme.spacing.md,
   },
   itemTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
-    marginBottom: theme.spacing.xxs,
+    fontSize: theme.typography.bodyLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.xs,
   },
   itemSubtitle: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.7,
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: theme.typography.bodySmall.fontSize * 1.4,
   },
   disabledText: {
     opacity: 0.5,
   },
+  switchContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
+  },
+  switchBlur: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '50',
+  },
+  actionButtonContainer: {
+    borderRadius: theme.spacing.md,
+    overflow: 'hidden',
+  },
   actionButton: {
     padding: theme.spacing.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   separator: {
     height: 1,
-    backgroundColor: theme.colors.border,
-    marginHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.outline + '20',
+    marginHorizontal: theme.spacing.lg,
+  },
+  testButtonContainer: {
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.xl,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
   },
   testButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.primary40 + '20',
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.medium,
-    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '50',
+    gap: theme.spacing.sm,
   },
   testButtonText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.primary40,
-    fontWeight: '600',
+    fontSize: theme.typography.labelLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.primary,
     marginLeft: theme.spacing.sm,
   },
-  infoCard: {
-    backgroundColor: theme.colors.primary40 + '05',
+  infoCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: theme.colors.primary40 + '20',
+    borderColor: theme.colors.primary + '08',
+    backgroundColor: theme.colors.surface + '30',
+  },
+  infoCard: {
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
   },
   infoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
+  },
+  infoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: theme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '50',
   },
   infoTitle: {
-    ...theme.typography.titleSmall,
-    color: theme.colors.primary40,
-    fontWeight: '600',
-    marginLeft: theme.spacing.sm,
+    fontSize: theme.typography.titleMedium.fontSize,
+    fontWeight: theme.typography.titleMedium.fontWeight,
+    color: theme.colors.onSurface,
   },
   infoText: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.8,
-    lineHeight: 20,
-    marginBottom: theme.spacing.sm,
+    fontSize: theme.typography.bodyMedium.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: theme.typography.bodyMedium.fontSize * 1.5,
+    marginBottom: theme.spacing.md,
   },
 });
 

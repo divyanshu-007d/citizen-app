@@ -7,9 +7,12 @@ import {
   ScrollView, 
   TouchableOpacity,
   Switch,
-  Alert
+  Alert,
+  Linking
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../design-system';
 import Card from '../../components/common/Card';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -231,10 +234,10 @@ const PrivacySettings = ({ navigation }) => {
           <Switch
             value={settings[item.key]}
             onValueChange={(value) => toggleSetting(item.key, value)}
-            thumbColor={theme.colors.primary40}
+            thumbColor={settings[item.key] ? theme.colors.primary : theme.colors.surface}
             trackColor={{ 
-              false: theme.colors.neutral20, 
-              true: theme.colors.primary40 + '40' 
+              false: theme.colors.surfaceVariant, 
+              true: theme.colors.primary + '40' 
             }}
             disabled={isDisabled}
           />
@@ -243,13 +246,15 @@ const PrivacySettings = ({ navigation }) => {
         {item.type === 'select' && (
           <TouchableOpacity 
             onPress={item.action}
-            style={styles.actionButton}
+            style={styles.actionButtonContainer}
           >
-            <FontAwesome5 
-              name="chevron-right" 
-              size={16} 
-              color={theme.colors.text} 
-            />
+            <BlurView intensity={30} tint="light" style={styles.actionButton}>
+              <FontAwesome5 
+                name="chevron-right" 
+                size={14} 
+                color={theme.colors.primary} 
+              />
+            </BlurView>
           </TouchableOpacity>
         )}
       </TouchableOpacity>
@@ -257,81 +262,131 @@ const PrivacySettings = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <FontAwesome5 name="chevron-left" size={20} color={theme.colors.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Privacy Settings</Text>
-        <View style={styles.placeholder} />
-      </View>
+    <View style={styles.container}>
+      {/* Gradient Background */}
+      <LinearGradient
+        colors={[
+          theme.colors.primary + '08',
+          theme.colors.secondary + '05',
+          theme.colors.background
+        ]}
+        locations={[0, 0.5, 1]}
+        style={styles.gradientBackground}
+      >
+        <SafeAreaView style={styles.safeArea}>
+          {/* Glassmorphism Header */}
+          <BlurView intensity={80} tint="light" style={styles.headerBlur}>
+            <View style={styles.header}>
+              <TouchableOpacity 
+                onPress={() => navigation.goBack()} 
+                style={styles.backButtonContainer}
+              >
+                <BlurView intensity={30} tint="light" style={styles.backButton}>
+                  <FontAwesome5 name="chevron-left" size={18} color={theme.colors.primary} />
+                </BlurView>
+              </TouchableOpacity>
+              <Text style={styles.headerTitle}>Privacy Settings</Text>
+              <View style={styles.placeholder} />
+            </View>
+          </BlurView>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {privacySections.map((section, index) => (
-          <View key={section.title} style={styles.section}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <Card style={styles.sectionCard}>
-              {section.items.map((item, itemIndex) => (
-                <View key={item.key}>
-                  {renderSettingItem(item)}
-                  {itemIndex < section.items.length - 1 && <View style={styles.separator} />}
+          <ScrollView
+            style={styles.scrollContainer}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {privacySections.map((section, index) => (
+              <View key={section.title} style={styles.section}>
+                <Text style={styles.sectionTitle}>{section.title}</Text>
+                <BlurView intensity={80} tint="light" style={styles.sectionCardBlur}>
+                  <View style={styles.sectionCard}>
+                    {section.items.map((item, itemIndex) => (
+                      <View key={item.key}>
+                        {renderSettingItem(item)}
+                        {itemIndex < section.items.length - 1 && <View style={styles.separator} />}
+                      </View>
+                    ))}
+                  </View>
+                </BlurView>
+              </View>
+            ))}
+
+            {/* Data Management Section */}
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Data Management</Text>
+              <BlurView intensity={80} tint="light" style={styles.sectionCardBlur}>
+                <View style={styles.sectionCard}>
+                  <TouchableOpacity style={styles.settingItem} onPress={showDataExport}>
+                    <View style={styles.itemLeft}>
+                      <BlurView intensity={30} tint="light" style={styles.actionIcon}>
+                        <FontAwesome5 name="download" size={16} color={theme.colors.primary} />
+                      </BlurView>
+                      <View style={styles.itemContent}>
+                        <Text style={styles.itemTitle}>Export My Data</Text>
+                        <Text style={styles.itemSubtitle}>Download a copy of all your personal data</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                  
+                  <View style={styles.separator} />
+                  
+                  <TouchableOpacity style={styles.settingItem} onPress={showDataDeletion}>
+                    <View style={styles.itemLeft}>
+                      <BlurView intensity={30} tint="light" style={[styles.actionIcon, styles.dangerIcon]}>
+                        <FontAwesome5 name="trash-alt" size={16} color={theme.colors.error} />
+                      </BlurView>
+                      <View style={styles.itemContent}>
+                        <Text style={[styles.itemTitle, styles.dangerText]}>Delete My Data</Text>
+                        <Text style={styles.itemSubtitle}>Permanently delete all personal data</Text>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-              ))}
-            </Card>
-          </View>
-        ))}
+              </BlurView>
+            </View>
 
-        {/* Data Management Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Data Management</Text>
-          <Card style={styles.sectionCard}>
-            <TouchableOpacity style={styles.settingItem} onPress={showDataExport}>
-              <View style={styles.itemContent}>
-                <Text style={styles.itemTitle}>Export My Data</Text>
-                <Text style={styles.itemSubtitle}>Download a copy of all your personal data</Text>
-              </View>
-              <FontAwesome5 name="download" size={16} color={theme.colors.primary40} />
+            {/* Privacy Policy Link */}
+            <TouchableOpacity 
+              style={styles.policyButtonContainer}
+              onPress={() => Alert.alert(
+                'Privacy Policy', 
+                'View full privacy policy at: https://citizenapp.com/privacy\n\nWould you like to open this link in your browser?',
+                [
+                  { text: 'Cancel', style: 'cancel' },
+                  { text: 'Open Browser', onPress: () => Linking.openURL('https://citizenapp.com/privacy') }
+                ]
+              )}
+            >
+              <BlurView intensity={60} tint="light" style={styles.policyButton}>
+                <FontAwesome5 name="shield-alt" size={18} color={theme.colors.primary} />
+                <Text style={styles.policyButtonText}>Read Privacy Policy</Text>
+                <FontAwesome5 name="external-link-alt" size={14} color={theme.colors.primary} />
+              </BlurView>
             </TouchableOpacity>
-            
-            <View style={styles.separator} />
-            
-            <TouchableOpacity style={styles.settingItem} onPress={showDataDeletion}>
-              <View style={styles.itemContent}>
-                <Text style={[styles.itemTitle, styles.dangerText]}>Delete My Data</Text>
-                <Text style={styles.itemSubtitle}>Permanently delete all personal data</Text>
+
+            {/* Info Section */}
+            <BlurView intensity={80} tint="light" style={styles.infoCardBlur}>
+              <View style={styles.infoCard}>
+                <View style={styles.infoHeader}>
+                  <BlurView intensity={30} tint="light" style={styles.infoIconContainer}>
+                    <FontAwesome5 name="info-circle" size={18} color={theme.colors.primary} />
+                  </BlurView>
+                  <Text style={styles.infoTitle}>Your Privacy Matters</Text>
+                </View>
+                <Text style={styles.infoText}>
+                  We are committed to protecting your privacy and giving you control over your personal information. 
+                  These settings help you customize how your data is used and shared.
+                </Text>
+                <Text style={styles.infoText}>
+                  Some settings may affect app functionality. For example, disabling location sharing may limit 
+                  your ability to report location-based complaints effectively.
+                </Text>
               </View>
-              <FontAwesome5 name="trash-alt" size={16} color={theme.colors.error} />
-            </TouchableOpacity>
-          </Card>
-        </View>
-
-        {/* Privacy Policy Link */}
-        <TouchableOpacity 
-          style={styles.policyButton}
-          onPress={() => Alert.alert('Privacy Policy', 'View full privacy policy at: https://citizenapp.com/privacy')}
-        >
-          <FontAwesome5 name="shield-alt" size={16} color={theme.colors.primary40} />
-          <Text style={styles.policyButtonText}>Read Privacy Policy</Text>
-          <FontAwesome5 name="external-link-alt" size={12} color={theme.colors.primary40} />
-        </TouchableOpacity>
-
-        {/* Info Section */}
-        <Card style={styles.infoCard}>
-          <View style={styles.infoHeader}>
-            <FontAwesome5 name="info-circle" size={20} color={theme.colors.primary40} />
-            <Text style={styles.infoTitle}>Your Privacy Matters</Text>
-          </View>
-          <Text style={styles.infoText}>
-            We are committed to protecting your privacy and giving you control over your personal information. 
-            These settings help you customize how your data is used and shared.
-          </Text>
-          <Text style={styles.infoText}>
-            Some settings may affect app functionality. For example, disabling location sharing may limit 
-            your ability to report location-based complaints effectively.
-          </Text>
-        </Card>
-      </ScrollView>
-    </SafeAreaView>
+            </BlurView>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
+    </View>
   );
 };
 
@@ -340,65 +395,123 @@ const createStyles = (theme) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
+  gradientBackground: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  headerBlur: {
+    paddingTop: theme.spacing.sm,
+    paddingBottom: theme.spacing.sm,
+    marginHorizontal: theme.spacing.md,
+    marginTop: theme.spacing.sm,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: theme.spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
+  backButtonContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
   },
   backButton: {
     padding: theme.spacing.sm,
+    borderRadius: theme.spacing.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   headerTitle: {
-    ...theme.typography.titleLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
+    fontSize: theme.typography.titleLarge.fontSize,
+    fontWeight: theme.typography.titleLarge.fontWeight,
+    color: theme.colors.onSurface,
+    textAlign: 'center',
+    flex: 1,
   },
   placeholder: {
-    width: 40,
+    width: 42,
+  },
+  scrollContainer: {
+    flex: 1,
   },
   scrollContent: {
-    padding: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.xxl,
   },
   section: {
-    marginBottom: theme.spacing.lg,
+    marginBottom: theme.spacing.xl,
   },
   sectionTitle: {
-    ...theme.typography.titleSmall,
-    color: theme.colors.text,
-    fontWeight: '600',
-    marginBottom: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.sm,
+    fontSize: theme.typography.titleMedium.fontSize,
+    fontWeight: theme.typography.titleMedium.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.md,
+    marginLeft: theme.spacing.sm,
+  },
+  sectionCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '10',
+    backgroundColor: theme.colors.surface + '40',
   },
   sectionCard: {
-    paddingVertical: 0,
+    paddingVertical: theme.spacing.xs,
   },
   settingItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: theme.spacing.md,
-    paddingHorizontal: theme.spacing.md,
+    justifyContent: 'space-between',
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+    minHeight: 64,
   },
   disabledItem: {
     opacity: 0.5,
   },
+  itemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  actionIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: theme.spacing.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
+  },
+  dangerIcon: {
+    borderColor: theme.colors.error + '20',
+  },
   itemContent: {
     flex: 1,
-    marginRight: theme.spacing.md,
+    justifyContent: 'center',
   },
   itemTitle: {
-    ...theme.typography.bodyLarge,
-    color: theme.colors.text,
-    fontWeight: '600',
-    marginBottom: theme.spacing.xxs,
+    fontSize: theme.typography.bodyLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.onSurface,
+    marginBottom: theme.spacing.xs,
   },
   itemSubtitle: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.7,
+    fontSize: theme.typography.bodySmall.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: theme.typography.bodySmall.fontSize * 1.4,
   },
   disabledText: {
     opacity: 0.5,
@@ -406,51 +519,89 @@ const createStyles = (theme) => StyleSheet.create({
   dangerText: {
     color: theme.colors.error,
   },
+  switchContainer: {
+    borderRadius: theme.spacing.lg,
+    overflow: 'hidden',
+  },
+  switchBlur: {
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '50',
+  },
   actionButton: {
     padding: theme.spacing.sm,
+    borderRadius: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '60',
   },
   separator: {
     height: 1,
-    backgroundColor: theme.colors.border,
-    marginHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.outline + '20',
+    marginHorizontal: theme.spacing.lg,
+  },
+  policyButtonContainer: {
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.xl,
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
   },
   policyButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: theme.colors.primary40 + '20',
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.medium,
-    marginBottom: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.xl,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '20',
+    backgroundColor: theme.colors.surface + '50',
+    gap: theme.spacing.sm,
   },
   policyButtonText: {
-    ...theme.typography.bodyMedium,
-    color: theme.colors.primary40,
-    fontWeight: '600',
+    fontSize: theme.typography.labelLarge.fontSize,
+    fontWeight: theme.typography.labelLarge.fontWeight,
+    color: theme.colors.primary,
     marginHorizontal: theme.spacing.sm,
   },
-  infoCard: {
-    backgroundColor: theme.colors.primary40 + '05',
+  infoCardBlur: {
+    borderRadius: theme.spacing.xl,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: theme.colors.primary40 + '20',
+    borderColor: theme.colors.primary + '08',
+    backgroundColor: theme.colors.surface + '30',
+  },
+  infoCard: {
+    paddingHorizontal: theme.spacing.xl,
+    paddingVertical: theme.spacing.lg,
   },
   infoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
+  },
+  infoIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: theme.spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary + '15',
+    backgroundColor: theme.colors.surface + '50',
   },
   infoTitle: {
-    ...theme.typography.titleSmall,
-    color: theme.colors.primary40,
-    fontWeight: '600',
-    marginLeft: theme.spacing.sm,
+    fontSize: theme.typography.titleMedium.fontSize,
+    fontWeight: theme.typography.titleMedium.fontWeight,
+    color: theme.colors.onSurface,
   },
   infoText: {
-    ...theme.typography.bodySmall,
-    color: theme.colors.text,
-    opacity: 0.8,
-    lineHeight: 20,
-    marginBottom: theme.spacing.sm,
+    fontSize: theme.typography.bodyMedium.fontSize,
+    color: theme.colors.onSurfaceVariant,
+    lineHeight: theme.typography.bodyMedium.fontSize * 1.5,
+    marginBottom: theme.spacing.md,
   },
 });
 

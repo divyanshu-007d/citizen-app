@@ -230,17 +230,17 @@ export const ProfileStackNavigator = () => {
       <ProfileStack.Screen 
         name="NotificationSettings" 
         component={NotificationSettings}
-        options={{ title: 'Notifications' }}
+        options={{ headerShown: false }}
       />
       <ProfileStack.Screen 
         name="PrivacySettings" 
         component={PrivacySettings}
-        options={{ title: 'Privacy' }}
+        options={{ headerShown: false }}
       />
       <ProfileStack.Screen 
         name="LanguageSettings" 
         component={LanguageSettings}
-        options={{ title: 'Language' }}
+        options={{ headerShown: false }}
       />
       <ProfileStack.Screen 
         name="SecuritySettings" 

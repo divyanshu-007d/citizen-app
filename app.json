@@ -24,6 +24,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "ccbe85d0-9ef4-4f72-b68d-2f85ded5819a"
+      }
+    },
+    "owner": "bramhasmi_inc"
   }
 }

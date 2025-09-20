@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { View, Text, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../design-system';
 
 // Import Stack Navigators
@@ -37,8 +39,20 @@ const TabNavigator = () => {
           ...theme.elevation.level2,
           height: theme.componentTokens.bottomNavigation.height + insets.bottom,
           paddingBottom: insets.bottom + theme.spacing.xs,
-          paddingTop: theme.spacing.sm,
+          paddingTop: theme.spacing.md, // Extra padding for elevated button
           paddingHorizontal: theme.spacing.xs,
+          // Add glassmorphism to tab bar
+          ...Platform.select({
+            ios: {
+              shadowColor: theme.colors.primary,
+              shadowOffset: { width: 0, height: -2 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+            },
+            android: {
+              elevation: 8,
+            },
+          }),
         },
         tabBarLabelStyle: {
           ...theme.typography.labelSmall,
@@ -79,24 +93,93 @@ const TabNavigator = () => {
           if (route.name === 'Report') {
             return (
               <View style={{
-                width: 48,
-                height: 48,
-                borderRadius: theme.borderRadius.xl,
-                backgroundColor: focused 
-                  ? theme.colors.primaryContainer 
-                  : theme.colors.primaryContainer,
-                justifyContent: 'center',
-                alignItems: 'center',
-                ...theme.elevation.level1,
+                width: 64,
+                height: 64,
+                marginTop: -20, // Elevate above tab bar
+                borderRadius: 32,
+                overflow: 'hidden',
+                ...Platform.select({
+                  ios: {
+                    shadowColor: theme.colors.primary,
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 16,
+                  },
+                  android: {
+                    elevation: 12,
+                  },
+                }),
               }}>
-                <FontAwesome5 
-                  name={iconName} 
-                  size={iconSize} 
-                  color={focused 
-                    ? theme.colors.onPrimaryContainer 
-                    : theme.colors.onPrimaryContainer
-                  } 
-                />
+                {/* Gradient Background */}
+                <LinearGradient
+                  colors={[
+                    theme.colors.primary + 'E6',
+                    theme.colors.secondary + 'CC',
+                    theme.colors.primary + 'F2'
+                  ]}
+                  locations={[0, 0.5, 1]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  {/* Glassmorphism Overlay */}
+                  <BlurView
+                    intensity={20}
+                    tint="light"
+                    style={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: 30,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: theme.colors.surface + '40',
+                      backgroundColor: theme.colors.surface + '15',
+                    }}
+                  >
+                    {/* Inner Icon Container */}
+                    <View style={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 24,
+                      backgroundColor: theme.colors.surface + '20',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderWidth: 1,
+                      borderColor: theme.colors.surface + '30',
+                    }}>
+                      <FontAwesome5 
+                        name="plus" 
+                        size={24} 
+                        color={theme.colors.surface}
+                        style={{
+                          textShadowColor: theme.colors.primary + '80',
+                          textShadowOffset: { width: 0, height: 2 },
+                          textShadowRadius: 4,
+                        }}
+                      />
+                    </View>
+                  </BlurView>
+                  
+                  {/* Animated Ring Effect */}
+                  <View style={{
+                    position: 'absolute',
+                    width: 64,
+                    height: 64,
+                    borderRadius: 32,
+                    borderWidth: 2,
+                    borderColor: focused 
+                      ? theme.colors.surface + '60' 
+                      : theme.colors.surface + '30',
+                    opacity: focused ? 1 : 0.7,
+                  }} />
+                </LinearGradient>
               </View>
             );
           }

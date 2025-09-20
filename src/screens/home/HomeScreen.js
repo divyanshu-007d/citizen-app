@@ -267,7 +267,7 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.header}>
               <View style={styles.headerContent}>
                 <Text style={styles.welcomeText}>Welcome back!</Text>
-                <Text style={styles.headerTitle}>Samriddhi</Text>
+                <Text style={styles.headerTitle}>Divyanshu</Text>
               </View>
               <TouchableOpacity 
                 style={styles.profileButton}
